@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Trends Result</title>
+</head>
+
+<body>
+    <h1>These are the most happening topics as on {{ result['timestamp'] }}</h1>
+    <ul>
+        <li>{{ result['trend1'] }}</li>
+        <li>{{ result['trend2'] }}</li>
+        <li>{{ result['trend3'] }}</li>
+        <li>{{ result['trend4'] }}</li>
+        <li>{{ result['trend5'] }}</li>
+    </ul>
+
+    <p>The IP Address used for this query was {{ result['ip_address'] }}</p>
+    
+    <h2>Here's a JSON extract of this record from the MongoDB: </h2>
+    <pre>{{ result }}</pre>
+    <button onclick="window.location.href='/'">Click here to run the query again</button>
+</body>
+</html>
