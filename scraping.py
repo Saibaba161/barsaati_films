@@ -6,9 +6,18 @@ import pymongo
 from datetime import datetime
 import uuid
 from flask import Flask, render_template
+from dotenv import load_dotenv
+import os
 
-# MongoDB Atlas connection string
-mongo_client = pymongo.MongoClient("mongodb+srv://kothasaibaba460:SaiBaba1610@cluster0.keygejh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+load_dotenv()
+
+MONGO_URI = os.getenv('MONGO_URI')
+TWITTER_USERNAME = os.getenv('TWITTER_USERNAME')
+TWITTER_PASSWORD = os.getenv('TWITTER_PASSWORD')
+
+# MongoDB Atlas connection
+mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client["kothasaibaba460"]
 collection = db["barsaati"]
 
@@ -20,13 +29,13 @@ try:
     driver.get("https://x.com/i/flow/login")
 
     username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "text")))
-    username.send_keys("giridhar_1610")
+    username.send_keys(TWITTER_USERNAME)
 
     next_button = driver.find_element(By.XPATH, "//span[contains(text(),'Next')]")
     next_button.click()
 
     password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "password")))
-    password.send_keys("Girdhar@1610")
+    password.send_keys(TWITTER_PASSWORD)
 
     login_button = driver.find_element(By.XPATH, "//span[contains(text(),'Log in')]")
     login_button.click()
