@@ -3,6 +3,7 @@ import subprocess
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
 
@@ -22,7 +23,13 @@ def index():
 @app.route('/run_script')
 def run_script():
     # Run the scraping script
+    logging.info('Executing scraping script')
     result = subprocess.run(['python', 'scraping.py'], capture_output=True, text=True)
+    logging.info(f"Scraping script output: {result.stdout}")
+
+    if result.returncode != 0:
+        logging.error(f"Error executing scraping script: {result.stderr}")
+        return jsonify({"error": "Scraping script failed"}), 500
     
     # Fetch the latest record from MongoDB
     last_record_cursor = collection.find().sort([('timestamp', -1)]).limit(1)

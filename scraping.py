@@ -7,6 +7,9 @@ from datetime import datetime
 import uuid
 from dotenv import load_dotenv
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -23,22 +26,35 @@ collection = db["barsaati"]
 driver = webdriver.Chrome()
 
 try:
+    logging.info('Starting scraping')
+
     # Navigating the login page
     driver.get("https://x.com/i/flow/login")
+    logging.info("Login page navigated")
 
     username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "text")))
     username.send_keys(TWITTER_USERNAME)
 
+    logging.info("Username entered")
+
     next_button = driver.find_element(By.XPATH, "//span[contains(text(),'Next')]")
     next_button.click()
+
+    logging.info("Next clicked")
 
     password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "password")))
     password.send_keys(TWITTER_PASSWORD)
 
+    logging.info("Password entered")
+
     login_button = driver.find_element(By.XPATH, "//span[contains(text(),'Log in')]")
     login_button.click()
 
+    logging.info("button clicked")
+
     WebDriverWait(driver, 40).until(EC.url_contains("https://x.com/home"))
+
+    logging.info("Home successful")
 
     current_url = driver.current_url
     print(f"Current URL: {current_url}")
@@ -48,9 +64,11 @@ try:
         whats_happening_section = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//h1[text()='Trending now']/ancestor::section"))
         )
+        logging.info("trending section found")
 
         trending_topics_elements = whats_happening_section.find_elements(By.XPATH, ".//div[@data-testid='trend']//span[contains(@class, 'css-1jxf684') and starts-with(text(), '#')]")
         trending_topics_text = [element.text for element in trending_topics_elements]
+        logging.info(f"trending topics:{trending_topics_text}")
 
         # Processing trending topics
         top_trends = trending_topics_text[:5]
@@ -70,7 +88,11 @@ try:
         "timestamp": datetime.now(),
         "ip_address": driver.execute_script("return window.location.hostname")
     }
+
+    logging.info(f"Inserting record:{record}")
     collection.insert_one(record)
+    logging.info("Record inserted")
+
     if any(trend is not None for trend in top_trends):
 
         print("Record inserted into MongoDB")
@@ -78,7 +100,8 @@ try:
         print("No trending topics found, record not inserted")
 
 except Exception as e:
-    print(f"An error occurred: {e}")
+    logging.error(f"An error occurred: {e}")
 
 finally:
     driver.quit()
+    logging.info("Driver quit")
