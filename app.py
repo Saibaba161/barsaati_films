@@ -4,11 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pymongo import MongoClient
-import pymongo
 from datetime import datetime
 import uuid
 from dotenv import load_dotenv
 import os
+from webdriver_manager.chrome import ChromeDriverManager
 
 load_dotenv()
 
@@ -24,7 +24,12 @@ db = client.kothasaibaba460
 collection = db.barsaati
 
 def scrape_trending_topics():
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
     try:
         driver.get("https://x.com/i/flow/login")
