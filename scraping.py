@@ -9,7 +9,6 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
 MONGO_URI = os.getenv('MONGO_URI')
@@ -25,7 +24,7 @@ collection = db["barsaati"]
 driver = webdriver.Chrome()
 
 try:
-    # Navigating to the login page
+    # Navigating the login page
     driver.get("https://x.com/i/flow/login")
 
     username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "text")))
