@@ -5,7 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import pymongo
 from datetime import datetime
 import uuid
-from flask import Flask, render_template
 from dotenv import load_dotenv
 import os
 
@@ -83,24 +82,3 @@ except Exception as e:
 
 finally:
     driver.quit()
-
-# Flask web application
-app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/run_script')
-def run_script():
-    # Fetching the last record from MongoDB
-    try:
-        last_record = collection.find_one(sort=[('timestamp', pymongo.DESCENDING)])
-
-    except IndexError:
-        last_record = None
-
-    return render_template('result.html', record=last_record)
-
-if __name__ == '__main__':
-    app.run(debug=True)
