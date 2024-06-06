@@ -12,11 +12,11 @@ mongo_client = pymongo.MongoClient("mongodb+srv://kothasaibaba460:SaiBaba1610@cl
 db = mongo_client["kothasaibaba460"]
 collection = db["barsaati"]
 
-# Initialize WebDriver
+# Initializing WebDriver
 driver = webdriver.Chrome()
 
 try:
-    # Navigate to the login page
+    # Navigating to the login page
     driver.get("https://x.com/i/flow/login")
 
     username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "text")))
@@ -35,9 +35,8 @@ try:
 
     current_url = driver.current_url
     print(f"Current URL: {current_url}")
-    driver.save_screenshot("homepage_screenshot.png")
 
-    # Extract trending topics
+    # Extracting trending topics
     try:
         whats_happening_section = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//h1[text()='Trending now']/ancestor::section"))
@@ -46,13 +45,14 @@ try:
         trending_topics_elements = whats_happening_section.find_elements(By.XPATH, ".//div[@data-testid='trend']//span[contains(@class, 'css-1jxf684') and starts-with(text(), '#')]")
         trending_topics_text = [element.text for element in trending_topics_elements]
 
-        # Process trending topics
+        # Processing trending topics
         top_trends = trending_topics_text[:5]
+
     except Exception as e:
         print(f"Error extracting trending topics: {e}")
         top_trends = []
 
-    # Insert the record into MongoDB
+    # Inserting the record into MongoDB
     record = {
         "_id": str(uuid.uuid4()),
         "trend1": top_trends[0] if len(top_trends) > 0 else None,
@@ -63,10 +63,9 @@ try:
         "timestamp": datetime.now(),
         "ip_address": driver.execute_script("return window.location.hostname")
     }
-    print("Record to be inserted:", record)
-
+    collection.insert_one(record)
     if any(trend is not None for trend in top_trends):
-        collection.insert_one(record)
+
         print("Record inserted into MongoDB")
     else:
         print("No trending topics found, record not inserted")
@@ -88,9 +87,11 @@ def index():
 def run_script():
     # Fetching the last record from MongoDB
     try:
-        last_record = collection.find().sort([('timestamp', -1)]).limit(1)[0]
+        last_record = collection.find_one(sort=[('timestamp', pymongo.DESCENDING)])
+
     except IndexError:
         last_record = None
+
     return render_template('result.html', record=last_record)
 
 if __name__ == '__main__':

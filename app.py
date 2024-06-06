@@ -19,7 +19,7 @@ def run_script():
     result = subprocess.run(['python', 'scraping.py'], capture_output=True, text=True)
     
     # Fetch the latest record from MongoDB
-    last_record_cursor = collection.find().sort([('_id', -1)]).limit(1)
+    last_record_cursor = collection.find().sort([('timestamp', -1)]).limit(1)
     last_record = list(last_record_cursor)
     
     if last_record:
