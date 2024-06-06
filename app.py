@@ -25,15 +25,13 @@ db = client.kothasaibaba460
 collection = db.barsaati
 
 def scrape_trending_topics():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-
+    # Install Chrome WebDriver using WebDriverManager
+    ChromeDriverManager(version="92.0.4515.43").install()
+    # Initialize WebDriver
+    driver = webdriver.Chrome()
+    
     try:
-        driver.get("https://x.com/i/flow/login")
+        driver.get("https://twitter.com/i/flow/login")
 
         username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "text")))
         username.send_keys(TWITTER_USERNAME)
@@ -47,7 +45,7 @@ def scrape_trending_topics():
         login_button = driver.find_element(By.XPATH, "//span[contains(text(),'Log in')]")
         login_button.click()
 
-        WebDriverWait(driver, 40).until(EC.url_contains("https://x.com/home"))
+        WebDriverWait(driver, 40).until(EC.url_contains("https://twitter.com/home"))
 
         current_url = driver.current_url
         print(f"Current URL: {current_url}")
@@ -71,6 +69,7 @@ def scrape_trending_topics():
             "timestamp": datetime.now(),
             "ip_address": driver.execute_script("return window.location.hostname")
         }
+        # Insert record into MongoDB collection
         collection.insert_one(record)
         if any(trend is not None for trend in top_trends):
             print("Record inserted into MongoDB")
@@ -89,6 +88,7 @@ def index():
 
 @app.route('/run_script')
 def run_script():
+    # Call the scraping function
     scrape_trending_topics()
     last_record = collection.find_one(sort=[('timestamp', pymongo.DESCENDING)])
 
