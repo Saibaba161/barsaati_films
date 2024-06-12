@@ -20,7 +20,10 @@ db = mongo_client["kothasaibaba460"]
 collection = db["barsaati"]
 
 # Initializing WebDriver
-driver = webdriver.Chrome()
+chrome_options= webdriver.ChromeOptions()
+chrome_options.add_argument('--proxy-server=%s' % PROXY)
+driver = webdriver.Chrome(options=chrome_options)
+
 
 try:
     # Navigating the login page
