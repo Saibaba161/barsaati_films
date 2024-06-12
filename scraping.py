@@ -20,6 +20,7 @@ db = mongo_client["kothasaibaba460"]
 collection = db["barsaati"]
 
 # Initializing WebDriver
+PROXY = '173.230.133.30:31280'
 chrome_options= webdriver.ChromeOptions()
 chrome_options.add_argument('--proxy-server=%s' % PROXY)
 driver = webdriver.Chrome(options=chrome_options)
